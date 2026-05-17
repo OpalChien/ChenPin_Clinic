@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="誠品診所最新資訊，包含門診公告、乳房健康衛教文章與活動訊息。"
+    />
+    <meta name="theme-color" content="#0f5b5a" />
+    <title>最新資訊｜誠品診所</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+    <script src="cms.js" defer></script>
+    <script src="script.js" defer></script>
+    <script src="news.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要內容</a>
+
+    <header class="site-header" data-header>
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="回到首頁">
+          <span class="brand-mark" aria-hidden="true">誠</span>
+          <span>
+            <strong>誠品診所</strong>
+            <small>自然醫學中心・乳房專科</small>
+          </span>
+        </a>
+
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+          <i data-lucide="menu" aria-hidden="true"></i>
+          <span class="sr-only">開啟選單</span>
+        </button>
+
+        <nav class="site-nav" id="site-nav" aria-label="主要導覽">
+          <a href="index.html#services">專科服務</a>
+          <a href="news.html" aria-current="page">最新資訊</a>
+          <a href="index.html#doctor">許醫師</a>
+          <a href="index.html#visit">門診資訊</a>
+          <a class="nav-cta" href="tel:+886227556012">立即致電</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="subpage-hero">
+        <div class="container">
+          <p class="section-kicker">News</p>
+          <h1>最新資訊</h1>
+          <p>門診公告、乳房健康衛教與診所活動會在這裡更新。</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="post-grid post-grid-wide" data-news-list></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <strong>誠品診所</strong>
+          <p>自然醫學中心・乳房專科</p>
+        </div>
+        <p>
+          本網站資訊僅供門診介紹與衛教參考，不能取代醫師親自診療。
+          <a href="admin.html">管理員登入</a>
+        </p>
+      </div>
+    </footer>
+
+    <nav class="mobile-actions" aria-label="手機快捷操作">
+      <a href="tel:+886227556012">
+        <i data-lucide="phone" aria-hidden="true"></i>
+        致電
+      </a>
+      <a
+        href="https://www.google.com/maps/search/?api=1&query=106%E5%8F%B0%E5%8C%97%E5%B8%82%E5%A4%A7%E5%AE%89%E5%8D%80%E6%95%A6%E5%8C%96%E5%8D%97%E8%B7%AF1%E6%AE%B5317%E8%99%9F"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <i data-lucide="map" aria-hidden="true"></i>
+        地圖
+      </a>
+    </nav>
+  </body>
+</html>

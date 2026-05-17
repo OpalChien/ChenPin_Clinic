@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#0f5b5a" />
+    <title>管理員登入｜誠品診所</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+    <script src="cms.js" defer></script>
+    <script src="script.js" defer></script>
+    <script src="admin.js" defer></script>
+  </head>
+  <body class="admin-page">
+    <header class="site-header" data-header>
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="回到首頁">
+          <span class="brand-mark" aria-hidden="true">誠</span>
+          <span>
+            <strong>誠品診所</strong>
+            <small>管理員後台</small>
+          </span>
+        </a>
+        <nav class="admin-top-links" aria-label="管理導覽">
+          <a href="index.html">回首頁</a>
+          <a href="news.html">看最新資訊</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="admin-shell">
+        <div class="container admin-grid">
+          <section class="admin-card" data-login-panel>
+            <p class="section-kicker">Admin</p>
+            <h1>管理員登入</h1>
+            <p>登入後可新增最新資訊文章，包含標題、內容與圖片。</p>
+            <form class="admin-form" data-login-form>
+              <label>
+                管理密碼
+                <input name="password" type="password" inputmode="numeric" autocomplete="current-password" required />
+              </label>
+              <button class="button button-primary" type="submit">
+                <i data-lucide="lock-keyhole" aria-hidden="true"></i>
+                登入
+              </button>
+              <p class="form-message" data-login-message role="status"></p>
+            </form>
+          </section>
+
+          <section class="admin-card admin-editor" data-editor-panel hidden>
+            <div class="editor-heading">
+              <div>
+                <p class="section-kicker">Publish</p>
+                <h1>新增最新資訊</h1>
+              </div>
+              <button class="button button-outline compact-button" type="button" data-logout>
+                <i data-lucide="log-out" aria-hidden="true"></i>
+                登出
+              </button>
+            </div>
+
+            <form class="admin-form" data-post-form>
+              <label>
+                標題
+                <input name="title" type="text" maxlength="80" placeholder="例如：五月門診時間公告" required />
+              </label>
+              <label>
+                發布日期
+                <input name="date" type="date" required />
+              </label>
+              <label>
+                內容
+                <textarea
+                  name="content"
+                  rows="8"
+                  maxlength="1800"
+                  placeholder="輸入公告、衛教內容或活動資訊"
+                  required
+                ></textarea>
+              </label>
+              <label>
+                上傳圖片
+                <input name="image" type="file" accept="image/png,image/jpeg,image/webp" />
+              </label>
+              <div class="image-preview" data-image-preview hidden></div>
+              <button class="button button-primary" type="submit">
+                <i data-lucide="send" aria-hidden="true"></i>
+                發布文章
+              </button>
+              <p class="form-message" data-post-message role="status"></p>
+            </form>
+          </section>
+
+          <aside class="admin-note">
+            <h2>上線提醒</h2>
+            <p>
+              目前用一般瀏覽器預覽時，文章會先存在這台電腦的瀏覽器。部署到 Vercel 並啟用 Vercel Blob 後，文章與圖片才會變成所有訪客都看得到的雲端資料。
+            </p>
+            <p>
+              真正公開網站不建議只靠前端密碼保護；此專案已附上 Vercel Function，之後可以把密碼放在 Vercel 的環境變數。
+            </p>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
