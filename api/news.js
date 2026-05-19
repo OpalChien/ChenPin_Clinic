@@ -114,12 +114,31 @@ export async function POST(request) {
     return json({ ok: true });
   }
 
-  if (!["create", "update"].includes(action)) {
+  if (!["create", "update", "delete"].includes(action)) {
     return json({ error: "未知的操作。" }, { status: 400 });
   }
 
   if (!hasCloudStorage()) {
     return json({ error: "尚未設定 Vercel Blob，無法寫入雲端資料。" }, { status: 501 });
+  }
+
+  const posts = await readPosts();
+  const postId = String(body.id || "").trim();
+
+  if (action === "delete") {
+    if (!postId) {
+      return json({ error: "找不到要刪除的公告。" }, { status: 400 });
+    }
+
+    const existing = posts.find((item) => item.id === postId);
+    if (!existing) {
+      return json({ error: "找不到要刪除的公告。" }, { status: 404 });
+    }
+
+    const nextPosts = posts.filter((item) => item.id !== postId);
+    await savePosts(nextPosts);
+
+    return json({ post: existing, posts: nextPosts });
   }
 
   const title = String(body.title || "").trim();
@@ -129,10 +148,7 @@ export async function POST(request) {
     return json({ error: "請填寫標題與內容。" }, { status: 400 });
   }
 
-  const posts = await readPosts();
-
   if (action === "update") {
-    const postId = String(body.id || "").trim();
     if (!postId) {
       return json({ error: "找不到要修改的公告。" }, { status: 400 });
     }

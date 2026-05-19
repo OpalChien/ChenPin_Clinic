@@ -322,6 +322,20 @@ ol {
   color: var(--teal);
 }
 
+.button-danger {
+  background: var(--rose);
+  color: var(--white);
+}
+
+.button-danger:hover,
+.button-danger:focus-visible {
+  background: #9f454d;
+}
+
+.danger-outline {
+  color: var(--rose);
+}
+
 .button-light {
   background: var(--white);
   color: var(--teal);
@@ -929,6 +943,17 @@ ol {
   font-size: 14px;
 }
 
+.admin-post-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.admin-post-actions .button {
+  width: auto;
+}
+
 .form-mode {
   margin: 0 0 -4px;
   color: var(--teal);
@@ -1206,6 +1231,14 @@ ol {
 
   .admin-post-item {
     grid-template-columns: 1fr;
+  }
+
+  .admin-post-actions {
+    justify-content: stretch;
+  }
+
+  .admin-post-actions .button {
+    flex: 1 1 140px;
   }
 
   .form-actions .button {

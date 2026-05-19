@@ -21,6 +21,7 @@ const cancelEditButton = document.querySelector("[data-cancel-edit]");
 let activePassword = "";
 let editingPost = null;
 let cachedPosts = [];
+let pendingDeleteId = "";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -62,6 +63,10 @@ const resetEditorForm = ({ clearMessage = true } = {}) => {
   }
   if (clearMessage && postMessage) postMessage.textContent = "";
   setFormMode("create");
+};
+
+const resetPendingDelete = () => {
+  pendingDeleteId = "";
 };
 
 const verifyPassword = async (password) => {
@@ -112,6 +117,33 @@ const renderAdminPosts = (posts) => {
     .map((post) => {
       const excerpt = post.content.length > 52 ? `${post.content.slice(0, 52)}...` : post.content;
 
+      const isConfirmingDelete = pendingDeleteId === post.id;
+      const actions = isConfirmingDelete
+        ? `
+          <div class="admin-post-actions">
+            <button class="button button-danger compact-button" type="button" data-confirm-delete-post="${adminEscapeHtml(post.id)}">
+              <i data-lucide="trash-2" aria-hidden="true"></i>
+              確認刪除
+            </button>
+            <button class="button button-outline compact-button" type="button" data-cancel-delete-post>
+              <i data-lucide="x" aria-hidden="true"></i>
+              取消
+            </button>
+          </div>
+        `
+        : `
+          <div class="admin-post-actions">
+            <button class="button button-outline compact-button" type="button" data-edit-post="${adminEscapeHtml(post.id)}">
+              <i data-lucide="pencil" aria-hidden="true"></i>
+              修改
+            </button>
+            <button class="button button-outline compact-button danger-outline" type="button" data-delete-post="${adminEscapeHtml(post.id)}">
+              <i data-lucide="trash-2" aria-hidden="true"></i>
+              刪除
+            </button>
+          </div>
+        `;
+
       return `
         <article class="admin-post-item">
           <div>
@@ -119,10 +151,7 @@ const renderAdminPosts = (posts) => {
             <strong>${adminEscapeHtml(post.title)}</strong>
             <p>${adminEscapeHtml(excerpt)}</p>
           </div>
-          <button class="button button-outline compact-button" type="button" data-edit-post="${adminEscapeHtml(post.id)}">
-            <i data-lucide="pencil" aria-hidden="true"></i>
-            修改
-          </button>
+          ${actions}
         </article>
       `;
     })
@@ -135,6 +164,29 @@ const renderAdminPosts = (posts) => {
     });
   });
 
+  postList.querySelectorAll("[data-delete-post]").forEach((button) => {
+    button.addEventListener("click", () => {
+      pendingDeleteId = button.dataset.deletePost || "";
+      renderAdminPosts(cachedPosts);
+      if (postListMessage) postListMessage.textContent = "請再次確認要刪除的公告。";
+    });
+  });
+
+  postList.querySelectorAll("[data-confirm-delete-post]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const post = cachedPosts.find((item) => item.id === button.dataset.confirmDeletePost);
+      if (post) deleteExistingPost(post);
+    });
+  });
+
+  postList.querySelectorAll("[data-cancel-delete-post]").forEach((button) => {
+    button.addEventListener("click", () => {
+      resetPendingDelete();
+      renderAdminPosts(cachedPosts);
+      if (postListMessage) postListMessage.textContent = "";
+    });
+  });
+
   if (window.lucide) window.lucide.createIcons();
 };
 
@@ -143,6 +195,7 @@ const loadExistingPosts = async ({ silent = false } = {}) => {
   if (postListMessage && !silent) postListMessage.textContent = "正在載入既有公告...";
 
   cachedPosts = await window.ChengpinNews.fetchPosts();
+  if (pendingDeleteId && !cachedPosts.some((post) => post.id === pendingDeleteId)) resetPendingDelete();
   renderAdminPosts(cachedPosts);
 
   if (postListMessage) {
@@ -156,6 +209,7 @@ const setEditorVisible = (visible) => {
   editorPanel.hidden = !visible;
   if (visible) {
     resetEditorForm();
+    resetPendingDelete();
     loadExistingPosts();
   }
   if (window.lucide) window.lucide.createIcons();
@@ -191,6 +245,8 @@ const resizeImageToDataUrl = (file) =>
 const startEditingPost = (post) => {
   if (!postForm) return;
 
+  resetPendingDelete();
+  renderAdminPosts(cachedPosts);
   editingPost = post;
   if (titleInput) titleInput.value = post.title;
   if (dateInput) dateInput.value = post.date || today();
@@ -207,6 +263,37 @@ const startEditingPost = (post) => {
   setFormMode("edit");
   if (postMessage) postMessage.textContent = "正在修改既有公告，儲存後會覆蓋原內容。";
   postForm.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+const deleteExistingPost = async (post) => {
+  if (!activePassword) {
+    if (postListMessage) postListMessage.textContent = "請重新登入後再刪除。";
+    setEditorVisible(false);
+    return;
+  }
+
+  if (editingPost?.id === post.id) resetEditorForm();
+  if (postListMessage) postListMessage.textContent = "正在刪除公告...";
+
+  try {
+    const result = await window.ChengpinNews.deletePost({
+      password: activePassword,
+      id: post.id
+    });
+    resetPendingDelete();
+    cachedPosts = Array.isArray(result.posts) ? result.posts : await window.ChengpinNews.fetchPosts();
+    renderAdminPosts(cachedPosts);
+    if (postListMessage) {
+      postListMessage.textContent =
+        result.mode === "cloud"
+          ? "已刪除雲端公告。"
+          : result.mode === "local"
+            ? "已先在這台電腦的瀏覽器刪除。部署雲端儲存後，訪客才會同步看到。"
+            : "此預覽環境無法永久儲存，刪除流程已完成。部署雲端儲存後即可正式使用。";
+    }
+  } catch {
+    if (postListMessage) postListMessage.textContent = "刪除失敗，請稍後再試一次。";
+  }
 };
 
 loginForm?.addEventListener("submit", async (event) => {
@@ -228,6 +315,7 @@ loginForm?.addEventListener("submit", async (event) => {
 logoutButton?.addEventListener("click", () => {
   activePassword = "";
   cachedPosts = [];
+  resetPendingDelete();
   setEditorVisible(false);
 });
 

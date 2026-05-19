@@ -44,7 +44,7 @@ const getLocalPosts = () => {
     const raw = window.localStorage.getItem(CP_STORAGE_KEY);
     if (!raw) return CP_DEFAULT_POSTS;
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length ? parsed.map(normalizePost) : CP_DEFAULT_POSTS;
+    return Array.isArray(parsed) ? parsed.map(normalizePost) : CP_DEFAULT_POSTS;
   } catch {
     return CP_DEFAULT_POSTS;
   }
@@ -181,11 +181,32 @@ const updatePost = async (payload) => {
   }
 };
 
+const deletePost = async (payload) => {
+  const posts = getLocalPosts();
+
+  try {
+    const response = await fetch(CP_API_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...payload, action: "delete" })
+    });
+    if (!response.ok) throw new Error("Cloud delete failed");
+    const data = await response.json();
+    return { mode: "cloud", posts: Array.isArray(data.posts) ? data.posts.map(normalizePost) : [] };
+  } catch {
+    const nextPosts = posts.filter((item) => item.id !== payload.id);
+    const mode = hasStorage() ? "local" : "memory";
+    saveLocalPosts(nextPosts);
+    return { mode, posts: nextPosts };
+  }
+};
+
 window.ChengpinNews = {
   fetchPosts,
   renderPosts,
   submitPost,
   updatePost,
+  deletePost,
   getLocalPosts,
   saveLocalPosts,
   defaultPosts: CP_DEFAULT_POSTS
