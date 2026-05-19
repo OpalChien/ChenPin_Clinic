@@ -136,7 +136,7 @@ const submitPost = async (payload) => {
     const response = await fetch(CP_API_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ ...payload, action: "create" })
     });
     if (!response.ok) throw new Error("Cloud save failed");
     const data = await response.json();
@@ -149,10 +149,43 @@ const submitPost = async (payload) => {
   }
 };
 
+const updatePost = async (payload) => {
+  const posts = getLocalPosts();
+  const existing = posts.find((item) => item.id === payload.id);
+  const post = normalizePost({
+    ...existing,
+    id: payload.id,
+    title: payload.title,
+    date: payload.date,
+    content: payload.content,
+    imageUrl: payload.imageDataUrl || existing?.imageUrl || payload.imageUrl || "",
+    createdAt: existing?.createdAt || new Date().toISOString()
+  });
+
+  try {
+    const response = await fetch(CP_API_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...payload, action: "update" })
+    });
+    if (!response.ok) throw new Error("Cloud update failed");
+    const data = await response.json();
+    return { mode: "cloud", post: data.post, posts: data.posts };
+  } catch {
+    const nextPosts = existing
+      ? posts.map((item) => (item.id === post.id ? post : item))
+      : [post, ...posts.filter((item) => item.id !== "welcome")];
+    const mode = hasStorage() ? "local" : "memory";
+    saveLocalPosts(nextPosts);
+    return { mode, post, posts: nextPosts };
+  }
+};
+
 window.ChengpinNews = {
   fetchPosts,
   renderPosts,
   submitPost,
+  updatePost,
   getLocalPosts,
   saveLocalPosts,
   defaultPosts: CP_DEFAULT_POSTS

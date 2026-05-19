@@ -35,7 +35,7 @@
           <section class="admin-card" data-login-panel>
             <p class="section-kicker">Admin</p>
             <h1>管理員登入</h1>
-            <p>登入後可新增最新資訊文章，包含標題、內容與圖片。</p>
+            <p>登入後可新增或修改最新資訊文章，包含標題、內容與圖片。</p>
             <form class="admin-form" data-login-form>
               <label>
                 管理密碼
@@ -52,8 +52,8 @@
           <section class="admin-card admin-editor" data-editor-panel hidden>
             <div class="editor-heading">
               <div>
-                <p class="section-kicker">Publish</p>
-                <h1>新增最新資訊</h1>
+                <p class="section-kicker">Publish / Edit</p>
+                <h1>管理最新資訊</h1>
               </div>
               <button class="button button-outline compact-button" type="button" data-logout>
                 <i data-lucide="log-out" aria-hidden="true"></i>
@@ -61,36 +61,60 @@
               </button>
             </div>
 
-            <form class="admin-form" data-post-form>
-              <label>
-                標題
-                <input name="title" type="text" maxlength="80" placeholder="例如：五月門診時間公告" required />
-              </label>
-              <label>
-                發布日期
-                <input name="date" type="date" required />
-              </label>
-              <label>
-                內容
-                <textarea
-                  name="content"
-                  rows="8"
-                  maxlength="1800"
-                  placeholder="輸入公告、衛教內容或活動資訊"
-                  required
-                ></textarea>
-              </label>
-              <label>
-                上傳圖片
-                <input name="image" type="file" accept="image/png,image/jpeg,image/webp" />
-              </label>
-              <div class="image-preview" data-image-preview hidden></div>
-              <button class="button button-primary" type="submit">
-                <i data-lucide="send" aria-hidden="true"></i>
-                發布文章
-              </button>
-              <p class="form-message" data-post-message role="status"></p>
-            </form>
+            <div class="admin-manager">
+              <section class="admin-posts-panel" aria-labelledby="existing-posts-title">
+                <div class="admin-section-heading">
+                  <div>
+                    <p class="section-kicker">Existing</p>
+                    <h2 id="existing-posts-title">既有公告</h2>
+                  </div>
+                  <button class="button button-outline compact-button" type="button" data-refresh-posts>
+                    <i data-lucide="refresh-cw" aria-hidden="true"></i>
+                    重新整理
+                  </button>
+                </div>
+                <div class="admin-post-list" data-post-list></div>
+                <p class="form-message" data-post-list-message role="status"></p>
+              </section>
+
+              <form class="admin-form" data-post-form>
+                <p class="form-mode" data-form-mode>新增公告</p>
+                <label>
+                  標題
+                  <input name="title" type="text" maxlength="80" placeholder="例如：五月門診時間公告" required />
+                </label>
+                <label>
+                  發布日期
+                  <input name="date" type="date" required />
+                </label>
+                <label>
+                  內容
+                  <textarea
+                    name="content"
+                    rows="8"
+                    maxlength="1800"
+                    placeholder="輸入公告、衛教內容或活動資訊"
+                    required
+                  ></textarea>
+                </label>
+                <label>
+                  <span data-image-label>上傳圖片</span>
+                  <input name="image" type="file" accept="image/png,image/jpeg,image/webp" />
+                </label>
+                <div class="image-preview" data-image-preview hidden></div>
+                <div class="form-actions">
+                  <button class="button button-primary" type="submit">
+                    <i data-lucide="send" aria-hidden="true"></i>
+                    <span data-submit-text>發布文章</span>
+                  </button>
+                  <button class="button button-outline" type="button" data-cancel-edit hidden>
+                    <i data-lucide="x" aria-hidden="true"></i>
+                    取消編輯
+                  </button>
+                </div>
+                <p class="form-message" data-post-message role="status"></p>
+              </form>
+            </div>
           </section>
 
           <aside class="admin-note">

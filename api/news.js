@@ -106,11 +106,16 @@ export async function GET() {
 export async function POST(request) {
   const body = await request.json().catch(() => ({}));
   const validation = validateAdmin(body.password);
+  const action = String(body.action || "create").toLowerCase();
 
   if (!validation.ok) return validation.response;
 
-  if (body.action === "login") {
+  if (action === "login") {
     return json({ ok: true });
+  }
+
+  if (!["create", "update"].includes(action)) {
+    return json({ error: "未知的操作。" }, { status: 400 });
   }
 
   if (!hasCloudStorage()) {
@@ -124,8 +129,34 @@ export async function POST(request) {
     return json({ error: "請填寫標題與內容。" }, { status: 400 });
   }
 
-  const imageUrl = await uploadImage(body);
   const posts = await readPosts();
+
+  if (action === "update") {
+    const postId = String(body.id || "").trim();
+    if (!postId) {
+      return json({ error: "找不到要修改的公告。" }, { status: 400 });
+    }
+
+    const existing = posts.find((item) => item.id === postId);
+    if (!existing) {
+      return json({ error: "找不到要修改的公告。" }, { status: 404 });
+    }
+
+    const uploadedImageUrl = await uploadImage(body);
+    const post = cleanPost({
+      ...existing,
+      title,
+      date: body.date || existing.date || new Date().toISOString().slice(0, 10),
+      content,
+      imageUrl: uploadedImageUrl || existing.imageUrl
+    });
+    const nextPosts = posts.map((item) => (item.id === postId ? post : item));
+    await savePosts(nextPosts);
+
+    return json({ post, posts: nextPosts });
+  }
+
+  const imageUrl = await uploadImage(body);
   const post = cleanPost({
     id: `post-${Date.now()}`,
     title,

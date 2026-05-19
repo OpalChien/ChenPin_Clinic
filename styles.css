@@ -18,6 +18,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -861,6 +865,86 @@ ol {
   align-items: start;
 }
 
+.admin-manager {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.15fr);
+  gap: 24px;
+  margin-top: 26px;
+  align-items: start;
+}
+
+.admin-posts-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-manager .admin-form {
+  margin-top: 0;
+}
+
+.admin-section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: start;
+}
+
+.admin-section-heading h2 {
+  margin-bottom: 0;
+  font-size: 22px;
+  line-height: 1.28;
+}
+
+.admin-post-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-post-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+}
+
+.admin-post-item time {
+  display: block;
+  color: var(--teal);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.admin-post-item strong {
+  display: block;
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.admin-post-item p {
+  margin: 4px 0 0;
+  font-size: 14px;
+}
+
+.form-mode {
+  margin: 0 0 -4px;
+  color: var(--teal);
+  font-weight: 900;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.form-actions .button {
+  width: auto;
+}
+
 .image-preview {
   overflow: hidden;
   border-radius: var(--radius);
@@ -871,6 +955,12 @@ ol {
   width: 100%;
   max-height: 360px;
   object-fit: cover;
+}
+
+.image-preview-empty {
+  padding: 18px;
+  color: var(--muted);
+  text-align: center;
 }
 
 .admin-note {
@@ -980,7 +1070,8 @@ ol {
   .doctor-layout,
   .visit-layout,
   .faq-layout,
-  .admin-grid {
+  .admin-grid,
+  .admin-manager {
     grid-template-columns: 1fr;
     gap: 30px;
   }
@@ -1111,6 +1202,14 @@ ol {
 
   .editor-heading {
     display: grid;
+  }
+
+  .admin-post-item {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions .button {
+    width: 100%;
   }
 
   .site-footer {
